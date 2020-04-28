@@ -67,17 +67,14 @@ TraditionalComment = "/*" {CommentContent} \*+ "/"
 EndOfLineComment = "//" [^\r\n]* {Newline}
 CommentContent = ( [^*] | \*+[^*/] )*
 
-/* Parte 1. Ejercicio A */
 ModernComment = "<!--" ( . | {Newline} )* "-->"
 
-/* Parte 1. Ejercicio B */
 RealNumber = {Number} "." {Number}
 ScienceNumber = ( {Number} | {RealNumber} ) ( "e" | "E" )( "-" | "+" | "" ) {Number}
 DoubleNumber = {RealNumber} | {ScienceNumber}
 HexAlfaNumber = ( [0-9A-F] )+
 HexNumber = "0x" {HexAlfaNumber} | "0X" {HexAlfaNumber}
 
-/* Parte 1. Ejercicio C */
 Whitespace = [ \t\f]
 WhitespaceNewline = [ \t\f] | {Newline}
 NombrePalabra = [A-ZÑÁÉÍÓÚ] [a-zñáéíóú]+
@@ -90,7 +87,6 @@ MatriculaNueva = [0-9]{4} "-" [A-Z]{1,3} | [0-9]{4} [A-Z]{1,3}
 Matricula = {MatriculaRetro} | {MatriculaAntigua} | {MatriculaNueva}
 Fecha = [0-3]? [0-9] "/" [0-1]? [0-9] "/" [0-9]{4}
 
-/* Parte 2. Ejercicio A */
 Exponential = "exp("
 Logarithm = "log("
 
