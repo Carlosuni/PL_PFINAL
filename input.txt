@@ -18,22 +18,6 @@ World -->
 2E-10;
 0xDEAF;
 0XDEAF;
-Juan
-Juan Castro Huertas
-Juan Castro Huertas	Ruiz
-Juan Castro Huertas Ruiz Huecas
-juan@castro.com
-12345678-X
-12345678X
-TO-12345
-TO-1234-AB
-1234-ABC
-TO12345
-TO1234AB
-1234ABC
-02/05/2020
-2/5/2020
-31/12/2020
 exp(2);
 3*exp(2.5);
 log(2);
@@ -44,3 +28,24 @@ log(2);
 3-5*2;
 5*(4-3)/(8-(4-1));
 100-50/2;
+REAL num;
+BOOLEANO espositivo;
+SI (num >= 0 AND num <= 4) OR (num NOT -2) ENTONCES
+espositivo := TRUE;
+SINO
+espositivo := FALSE;
+FINSI
+REAL a,b2,c3a,max;
+a := 1;
+MIENTRAS seguir AND punto1.radio>0
+FINMIENTRAS
+STRUCT VECTOR2D {REAL x1; REAL x2};
+alumno.nombre.l1 :='A';
+alumno.nombre.l1 :=’A’;
+FUNCION cuadrado( REAL a ) RETURN REAL
+{
+a * a;
+}
+ENTERO en2 := 6;
+
+

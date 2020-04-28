@@ -77,18 +77,16 @@ HexNumber = "0x" {HexAlfaNumber} | "0X" {HexAlfaNumber}
 
 Whitespace = [ \t\f]
 WhitespaceNewline = [ \t\f] | {Newline}
-NombrePalabra = [A-ZÑÁÉÍÓÚ] [a-zñáéíóú]+
-NombreApellidos = ( {NombrePalabra} {Whitespace}* )+
-Email = .+ "@" .+ "." .+
-Dni = [0-9]?[0-9]{7} "-" [A-Z] | [0-9]{7,8} [A-Z]
-MatriculaRetro = [A-Z]{1,2} "-" [0-9]{5} | [A-Z]{1,2} [0-9]{5}
-MatriculaAntigua = [A-Z]{1,2} "-" [0-9]{4} "-" [A-Z]{1,2} | [A-Z]{1,2} [0-9]{4} [A-Z]{1,2}
-MatriculaNueva = [0-9]{4} "-" [A-Z]{1,3} | [0-9]{4} [A-Z]{1,3}
-Matricula = {MatriculaRetro} | {MatriculaAntigua} | {MatriculaNueva}
-Fecha = [0-3]? [0-9] "/" [0-1]? [0-9] "/" [0-9]{4}
+
 
 Exponential = "exp("
 Logarithm = "log("
+
+GenericWord = [a-z] [A-Z0-9a-z]*
+CapsWord = [A-Z] [A-Z0-9]*
+
+SimpleComma = "'" | "’"
+
 
 
 ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
@@ -116,13 +114,37 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   {Comment}			{ return symbolFactory.newSymbol("COMMENT", COMMENT, yytext()); }
   {DoubleNumber}	{ return symbolFactory.newSymbol("DOUBLENUMBER", DOUBLENUMBER, Double.parseDouble(yytext())); }
   {HexNumber} 	    { return symbolFactory.newSymbol("HEXNUMBER", HEXNUMBER, Integer.parseInt(yytext().substring(2,yytext().length()), 16)); }
-  {NombreApellidos}	{ return symbolFactory.newSymbol("NOMBREAPELLIDOS", NOMBREAPELLIDOS, yytext()); }
-  {Email}			{ return symbolFactory.newSymbol("EMAIL", EMAIL, yytext()); }
-  {Dni}				{ return symbolFactory.newSymbol("DNI", DNI, yytext()); }
-  {Matricula}		{ return symbolFactory.newSymbol("MATRICULA", MATRICULA, yytext()); }
-  {Fecha}			{ return symbolFactory.newSymbol("FECHA", FECHA, yytext()); }
   {Exponential}		{ return symbolFactory.newSymbol("EXPONENTIAL", EXPONENTIAL, yytext()); }
   {Logarithm}		{ return symbolFactory.newSymbol("LOGARITHM", LOGARITHM, yytext()); }
+  "AND"          	{ return symbolFactory.newSymbol("AND", AND); }
+  "OR"          	{ return symbolFactory.newSymbol("OR", OR); }
+  "NOT"          	{ return symbolFactory.newSymbol("NOT", NOT); }
+  "=="          	{ return symbolFactory.newSymbol("EQUALTO", EQUALTO); }
+  "<="          	{ return symbolFactory.newSymbol("LEQUAL", LEQUAL); }
+  ">="          	{ return symbolFactory.newSymbol("GEQUAL", GEQUAL); }
+  "ENTERO"         	{ return symbolFactory.newSymbol("INTTYPE", INTTYPE); }
+  "REAL"          	{ return symbolFactory.newSymbol("REALTYPE", REALTYPE); }
+  "BOOLEANO"        { return symbolFactory.newSymbol("BOOLEANTYPE", BOOLEANTYPE); }
+  "CARACTER"        { return symbolFactory.newSymbol("CHARTYPE", CHARTYPE); }
+  "STRUCT"          { return symbolFactory.newSymbol("STRUCTTYPE", STRUCTTYPE); }
+  "{"          		{ return symbolFactory.newSymbol("LBRACE", LBRACE); }
+  "}"          		{ return symbolFactory.newSymbol("RBRACE", RBRACE); }
+  "."          		{ return symbolFactory.newSymbol("DOT", DOT); }
+  ","          		{ return symbolFactory.newSymbol("COMMA", COMMA); }
+  {SimpleComma} 	{ return symbolFactory.newSymbol("SIMPLECOMMA", SIMPLECOMMA); }
+  ":="          	{ return symbolFactory.newSymbol("ASSIGNSYMBOL", ASSIGNSYMBOL); }
+  "SI"          	{ return symbolFactory.newSymbol("SI", SI); }
+  "ENTONCES"        { return symbolFactory.newSymbol("ENTONCES", ENTONCES); }
+  "SINO"          	{ return symbolFactory.newSymbol("SINO", SINO); }
+  "FINSI"          	{ return symbolFactory.newSymbol("FINSI", FINSI); }
+  "MIENTRAS"        { return symbolFactory.newSymbol("MIENTRAS", MIENTRAS); }
+  "FINMIENTRAS"     { return symbolFactory.newSymbol("FINMIENTRAS", FINMIENTRAS); }
+  "FUNCION"         { return symbolFactory.newSymbol("FUNCION", FUNCION); }
+  "RETURN"          { return symbolFactory.newSymbol("RETURN", RETURN); }
+  {GenericWord}     { return symbolFactory.newSymbol("GENERICWORD", GENERICWORD, yytext()); }
+  {CapsWord}        { return symbolFactory.newSymbol("CAPSWORD", CAPSWORD, yytext()); }
+  "TRUE"         	{ return symbolFactory.newSymbol("TRUEVALUE", TRUEVALUE); }
+  "FALSE"         	{ return symbolFactory.newSymbol("FALSEVALUE", FALSEVALUE); }
 }
 
 

@@ -36,19 +36,21 @@ scan with {: return lexer.next_token(); :};
 
 /* Terminals (tokens returned by the scanner). */
 terminal            SEMI, PLUS, MINUS, TIMES, DIVIDEDBY, LPAREN, RPAREN;
+terminal            AND, OR, NOT, EQUALTO, LEQUAL, GEQUAL;
+terminal            INTTYPE, REALTYPE, BOOLEANTYPE, STRUCTTYPE, CHARTYPE;
+terminal          	TRUEVALUE, FALSEVALUE;
+terminal            LBRACE, RBRACE, DOT, COMMA, SIMPLECOMMA, ASSIGNSYMBOL;
+terminal          	SI, ENTONCES, SINO, FINSI, MIENTRAS, FINMIENTRAS;
+terminal          	FUNCION, RETURN;
 terminal Integer    NUMBER;        // our scanner provides numbers as integers
 
 terminal String    	COMMENT;
 terminal Double    	DOUBLENUMBER;
 terminal Integer    HEXNUMBER;
-terminal String    	NOMBREAPELLIDOS;
-terminal String		EMAIL;
-terminal String		DNI;
-terminal String		MATRICULA;
-terminal String 	FECHA;
 terminal String		EXPONENTIAL;
 terminal String		LOGARITHM;
-
+terminal String		GENERICWORD;
+terminal String		CAPSWORD;
 
 /* Non terminals */
 non terminal            statement_list;
@@ -65,11 +67,6 @@ statement_list ::= statement_list statement 	{:  :}
             
 statement ::= expr:e SEMI        			{: System.out.println(e); 							:}
             | COMMENT	                    {:  												:}
-            | NOMBREAPELLIDOS:e				{: System.out.println("Nombre y apellidos: " + e); 	:}
-            | EMAIL:e						{: System.out.println("e-mail: " + e); 				:}
-            | DNI:e							{: System.out.println("DNI: " + e); 				:}
-            | MATRICULA:e					{: System.out.println("Matrícula: " + e); 			:}
-            | FECHA:e						{: System.out.println("Fecha: " + e); 				:}
 			;     
 			  
 factor    ::= NUMBER:n	               		{: RESULT = Double.valueOf(n);       				:}
