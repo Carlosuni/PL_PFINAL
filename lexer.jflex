@@ -82,8 +82,8 @@ WhitespaceNewline = [ \t\f] | {Newline}
 Exponential = "exp("
 Logarithm = "log("
 
-GenericWord = [a-z] [A-Z0-9a-z]*
-CapsWord = [A-Z] [A-Z0-9]*
+Id = [a-z] [A-Z0-9a-z]*
+CapsId = [A-Z] [A-Z0-9]*
 
 SimpleComma = "'" | "’"
 
@@ -141,8 +141,8 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   "FINMIENTRAS"     { return symbolFactory.newSymbol("FINMIENTRAS", FINMIENTRAS); }
   "FUNCION"         { return symbolFactory.newSymbol("FUNCION", FUNCION); }
   "RETURN"          { return symbolFactory.newSymbol("RETURN", RETURN); }
-  {GenericWord}     { return symbolFactory.newSymbol("GENERICWORD", GENERICWORD, yytext()); }
-  {CapsWord}        { return symbolFactory.newSymbol("CAPSWORD", CAPSWORD, yytext()); }
+  {Id}    			{ return symbolFactory.newSymbol("ID", ID, yytext()); }
+  {CapsId}          { return symbolFactory.newSymbol("CAPSID", CAPSID, yytext()); }
   "TRUE"         	{ return symbolFactory.newSymbol("TRUEVALUE", TRUEVALUE); }
   "FALSE"         	{ return symbolFactory.newSymbol("FALSEVALUE", FALSEVALUE); }
 }

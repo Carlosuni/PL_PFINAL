@@ -49,8 +49,10 @@ terminal Double    	DOUBLENUMBER;
 terminal Integer    HEXNUMBER;
 terminal String		EXPONENTIAL;
 terminal String		LOGARITHM;
-terminal String		GENERICWORD;
-terminal String		CAPSWORD;
+terminal String		ID;
+terminal String		CAPSID;
+
+
 
 /* Non terminals */
 non terminal            statement_list;
@@ -88,4 +90,10 @@ expr      ::= expr:e1 PLUS  term:e2         {: RESULT = e1 + e2;        						:}
             | expr:e1 MINUS term:e2         {: RESULT = e1 - e2;        						:}
 			| term:e					    {: RESULT = e;        								:}	
 			;
+			
+/*asig	  ::= ID:s ASIG expr:e 				{: RESULT = e;
+											   s.valor = e;										:}
+			|ID:s ASIG asig:e 				{: RESULT = e;
+											   s.valor = e;										:}
+			;*/
        

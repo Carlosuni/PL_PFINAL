@@ -8,7 +8,6 @@ package cup.pFinal;
 /** CUP generated interface containing symbol constants. */
 public interface sym {
   /* terminals */
-  public static final int CAPSWORD = 43;
   public static final int COMMENT = 37;
   public static final int GEQUAL = 14;
   public static final int SI = 28;
@@ -29,6 +28,8 @@ public interface sym {
   public static final int MIENTRAS = 32;
   public static final int COMMA = 25;
   public static final int PLUS = 3;
+  public static final int CAPSID = 43;
+  public static final int ID = 42;
   public static final int DOT = 24;
   public static final int EOF = 0;
   public static final int RETURN = 35;
@@ -37,7 +38,6 @@ public interface sym {
   public static final int DOUBLENUMBER = 38;
   public static final int NUMBER = 36;
   public static final int STRUCTTYPE = 18;
-  public static final int GENERICWORD = 42;
   public static final int SIMPLECOMMA = 26;
   public static final int REALTYPE = 16;
   public static final int TIMES = 5;
@@ -95,8 +95,8 @@ public interface sym {
   "HEXNUMBER",
   "EXPONENTIAL",
   "LOGARITHM",
-  "GENERICWORD",
-  "CAPSWORD"
+  "ID",
+  "CAPSID"
   };
 }
 
