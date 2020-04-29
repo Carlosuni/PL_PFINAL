@@ -52,6 +52,7 @@ public interface sym {
   public static final int TRUEVALUE = 20;
   public static final int FINSI = 31;
   public static final int DIVIDEDBY = 6;
+  public static final int ATTRIBUTEID = 44;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -96,7 +97,8 @@ public interface sym {
   "EXPONENTIAL",
   "LOGARITHM",
   "ID",
-  "CAPSID"
+  "CAPSID",
+  "ATTRIBUTEID"
   };
 }
 

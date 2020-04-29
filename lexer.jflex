@@ -85,6 +85,8 @@ Logarithm = "log("
 Id = [a-z] [A-Z0-9a-z]*
 CapsId = [A-Z] [A-Z0-9]*
 
+AttributeId = "." [a-z] [A-Z0-9a-z]*
+
 SimpleComma = "'" | "’"
 
 
@@ -143,6 +145,7 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
   "RETURN"          { return symbolFactory.newSymbol("RETURN", RETURN); }
   {Id}    			{ return symbolFactory.newSymbol("ID", ID, yytext()); }
   {CapsId}          { return symbolFactory.newSymbol("CAPSID", CAPSID, yytext()); }
+  {AttributeId}    	{ return symbolFactory.newSymbol("ATTRIBUTEID", ATTRIBUTEID, yytext()); }
   "TRUE"         	{ return symbolFactory.newSymbol("TRUEVALUE", TRUEVALUE); }
   "FALSE"         	{ return symbolFactory.newSymbol("FALSEVALUE", FALSEVALUE); }
 }

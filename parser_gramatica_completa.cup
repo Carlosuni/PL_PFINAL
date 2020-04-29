@@ -1,0 +1,188 @@
+/*
+   Simple +/-/* expression language; 
+   parser evaluates constant expressions on the fly
+*/
+
+package cup.pFinal;
+
+import java_cup.runtime.*;
+import cup.pFinal.Lexer;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Hashtable;
+
+/* Custom Imports */
+import java.lang.Math; 
+
+
+parser code {:
+  protected Lexer lexer;
+  Hashtable table = new Hashtable();
+:}
+
+/* define how to connect to the scanner! */
+init with {:
+  ComplexSymbolFactory f = new ComplexSymbolFactory();
+  symbolFactory = f;
+  File file = new File("input.txt");
+  FileInputStream fis = null;
+  try {
+    fis = new FileInputStream(file);
+  } catch (IOException e) {
+    e.printStackTrace();
+  } 
+  lexer = new Lexer(f,fis);
+:};
+scan with {: return lexer.next_token(); :};
+
+/* Terminals (tokens returned by the scanner). */
+terminal            SEMI, PLUS, MINUS, TIMES, DIVIDEDBY, LPAREN, RPAREN;
+terminal            AND, OR, NOT, EQUALTO, LEQUAL, GEQUAL;
+terminal            INTTYPE, REALTYPE, BOOLEANTYPE, STRUCTTYPE, CHARTYPE;
+terminal          	TRUEVALUE, FALSEVALUE;
+terminal            LBRACE, RBRACE, DOT, COMMA, SIMPLECOMMA, ASSIGNSYMBOL;
+terminal          	SI, ENTONCES, SINO, FINSI, MIENTRAS, FINMIENTRAS;
+terminal          	FUNCION, RETURN;
+terminal Integer    NUMBER;        // our scanner provides numbers as integers
+
+terminal String    	COMMENT;
+terminal Double    	DOUBLENUMBER;
+terminal Integer    HEXNUMBER;
+terminal String		EXPONENTIAL;
+terminal String		LOGARITHM;
+terminal String		ID;
+terminal String		CAPSID;
+terminal String		ATTRIBUTEID;
+
+
+/* Non terminals */
+non terminal           statement_list;
+non terminal           statement;
+non terminal Double    expr;      // used to store evaluated subexpressions
+non terminal Double    term;      // used to store evaluated subexpressions
+non terminal Double    factor;      // used to store evaluated subexpressions
+non terminal Double    assign;
+non terminal		   declare;
+non terminal		   simple_declare;
+non terminal		   declare_list;
+non terminal		   struct_define;
+non terminal		   struct_declare;
+non terminal		   logic_expr;
+non terminal		   block;
+non terminal		   if_block;
+non terminal		   while_block;
+non terminal		   struct_attribute;
+non terminal		   attribute_chain;
+non terminal		   function_definition;
+non terminal		   function_call;
+
+
+/* The grammar rules */
+statement_list ::= statement_list statement 	{:  :}
+           		 | statement                   	{:  :}
+            	 ;
+            
+statement ::= expr:e SEMI        			{: System.out.println(e); 							:}
+            | COMMENT	                    {:  												:}
+            | assign SEMI	                    {:  												:}
+            | declare SEMI	                    {:  												:}
+            | struct_define SEMI	                    {:  												:}
+            | if_block	                    {:  												:}
+            | while_block	                    {:  												:}
+            | function_definition	                    {:  												:}
+            | function_call SEMI	                    {:  												:}
+			;     
+			  
+factor    ::= NUMBER:n	               		{: RESULT = Double.valueOf(n);       				:}
+            | DOUBLENUMBER:n	            {: RESULT = n;       								:}
+            | HEXNUMBER:n	                {: RESULT = Double.valueOf(n);       				:}     
+			| LPAREN expr:e RPAREN	        {: RESULT = e;           							:}
+            | EXPONENTIAL expr:e1 RPAREN    {: RESULT = Math.exp(e1);        					:}         
+            | LOGARITHM expr:e1 RPAREN   	{: RESULT = Math.log(e1);        					:}                  			
+            | MINUS factor:e                {: RESULT = -e;           							:}           
+            | PLUS factor:e                 {: RESULT = e;           							:}           		
+			| ID:s		 					{: Integer value = (Integer) table.get(s);
+											       if (value == null) {
+												       parser.report_error("Undeclared Identifier " + ident, new Symbol(sym.ID, s));
+													   value = new Integer(0);
+												   }
+											   RESULT = value;									:}
+            | function_call:e                 {: RESULT = e;           							:}           													   
+			;
+ 
+term      ::= term:e1 TIMES factor:e2         {: RESULT = e1 * e2;        						:}
+            | term:e1 DIVIDEDBY factor:e2     {: RESULT = e1 / e2;        						:}
+            | factor:e					      {: RESULT = e;        							:}
+			;            
+         
+expr      ::= expr:e1 PLUS  term:e2         {: RESULT = e1 + e2;        						:}
+            | expr:e1 MINUS term:e2         {: RESULT = e1 - e2;        						:}
+			| term:e					    {: RESULT = e;        								:}	
+			;
+			
+simple_declare   ::= INTTYPE ID:s		       		{: 													:}
+				   | REALTYPE ID:s		       		{: 													:}
+	   			   | BOOLEANTYPE ID:s		       	{: 													:}
+				   | CHARTYPE ID:s		       		{: 													:}
+				   ;
+			
+struct_define   ::= STRUCTTYPE CAPSID:s LBRACE declare_list RBRACE    	{: 													:}
+			      ;
+			   
+struct_declare   ::= CAPSID:s1  ID:s2    	{: 													:}
+			   ;			   
+				   
+declare_list   ::= declare_list COMMA declare 	{:  :}
+           		 | declare                   	{:  :}
+            	 ;	
+
+declare   ::= simple_declare 	{:  :}
+           	| struct_declare                   	{:  :}
+            ;            						   
+		
+assign	  ::= ID:s ASSIGNSYMBOL expr:e  			{: table.put(s, e); 						:}
+ 			| ID:s ASSIGNSYMBOL ID:t  				{: table.put(s, table.get(t)); 				:}
+ 			| simple_declare:s ASSIGNSYMBOL expr:e  		{: table.put(s, e); 						:}										 
+ 			| ID:s ASSIGNSYMBOL logic_expr:e  		{: table.put(s, e); 						:}										 
+ 			| simple_declare:s ASSIGNSYMBOL logic_expr:e  	{: table.put(s, e); 						:}										 
+ 			| struct_attribute:s ASSIGNSYMBOL logic_expr:e  		{: table.put(s, e); 						:}										 
+ 			;
+
+struct_attribute   ::= ID:s1 attribute_chain  			{: 					:}
+					 ;
+					 
+attribute_chain   ::= ATTRIBUTEID:s attribute_chain  			{: 					:}
+					| ATTRIBUTEID:s
+					;
+			
+logic_expr ::= logic_expr:e1 AND logic_expr:e2  	{: RESULT = e1 && e2						:}
+ 			| logic_expr:e1 OR logic_expr:e2  		{: RESULT = e1 || e2						:}
+ 			| NOT logic_expr:e 				  		{: RESULT = !e 								:}
+ 			| expr:e1 EQUALTO expr:e2 				{: RESULT = e1 == e2						:}
+ 			| expr:e1 LEQUAL expr:e2 				{: RESULT = e1 <= e2						:}
+ 			| expr:e1 GEQUAL expr:e2 				{: RESULT = e1 >= e2						:}
+			| LPAREN logic_expr:e RPAREN	        {: RESULT = e;           					:}
+			;
+
+block  	  ::= LBRACE statement_list:sl RBRACE  		{: 						:}
+			;
+
+if_block  ::= SI logic_expr:le ENTONCES  block:b FINSI	   				{: 					:}
+ 			| SI logic_expr:le ENTONCES  block:b SINO block:b FINSI		{: 					:}          			
+			;
+			
+while_block  ::= MIENTRAS logic_expr:le block:b FINMIENTRAS	   	{: 					:}
+			   ;
+					
+function_definition  ::= FUNCION ID:s LPAREN  simple_declare RPAREN RETURN INTTYPE LBRACE block:b RBRACE	{: 					:}
+					   | FUNCION ID:s LPAREN  simple_declare RPAREN RETURN REALTYPE LBRACE block:b RBRACE	{: 					:}
+					   | FUNCION ID:s LPAREN  simple_declare RPAREN RETURN BOOLEANTYPE LBRACE block:b RBRACE	{: 					:}
+					   | FUNCION ID:s LPAREN  simple_declare RPAREN RETURN CHARTYPE LBRACE block:b RBRACE	{: 					:}
+					   ;
+
+function_call  ::= ID:s LPAREN  expr RPAREN  {: 					:}
+				 | ID:s LPAREN  logic_expr RPAREN  {: 					:}
+				 ;
+			
+    
