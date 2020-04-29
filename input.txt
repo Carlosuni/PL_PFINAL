@@ -28,7 +28,7 @@ log(2);
 3-5*2;
 5*(4-3)/(8-(4-1));
 100-50/2;
-REAL num;
+<!--REAL num;
 BOOLEANO espositivo;
 SI (num >= 0 AND num <= 4) OR (num NOT -2) ENTONCES
 espositivo := TRUE;
@@ -46,6 +46,5 @@ FUNCION cuadrado( REAL a ) RETURN REAL
 {
 a * a;
 }
-ENTERO en2 := 6;
-
+ENTERO en2 := 6;-->
 

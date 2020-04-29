@@ -10,6 +10,7 @@ import cup.pFinal.Lexer;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Hashtable;
 import java.lang.Math;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import java_cup.runtime.XMLElement;
@@ -35,13 +36,13 @@ public class Parser extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\023\000\002\002\004\000\002\002\004\000\002\002" +
+    "\000\025\000\002\002\004\000\002\002\004\000\002\002" +
     "\003\000\002\003\004\000\002\003\003\000\002\006\003" +
     "\000\002\006\003\000\002\006\003\000\002\006\005\000" +
     "\002\006\005\000\002\006\005\000\002\006\004\000\002" +
     "\006\004\000\002\005\005\000\002\005\005\000\002\005" +
     "\003\000\002\004\005\000\002\004\005\000\002\004\003" +
-    "" });
+    "\000\002\007\005\000\002\007\005" });
 
   /** Access to production table. */
   public short[][] production_table() {return _production_table;}
@@ -183,6 +184,7 @@ public class Parser extends java_cup.runtime.lr_parser {
 //@@CUPDBG0
 
   protected Lexer lexer;
+  Hashtable table = new Hashtable();
 
 
 /** Cup generated class to encapsulate user supplied action code.*/
@@ -457,6 +459,38 @@ class CUP$Parser$actions {
 		//@@CUPDBG20
  RESULT = e;        								
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
+            }
+          return CUP$Parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 19: // assign ::= ID ASSIGNSYMBOL expr 
+            {
+              Double RESULT =null;
+		Location sxleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).xleft;
+		Location sxright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).xright;
+		String s = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
+		Location exleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xleft;
+		Location exright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xright;
+		Double e = (Double)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		//@@CUPDBG21
+ table.put(s, e); 
+              CUP$Parser$result = parser.getSymbolFactory().newSymbol("assign",5, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
+            }
+          return CUP$Parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 20: // assign ::= ID ASSIGNSYMBOL ID 
+            {
+              Double RESULT =null;
+		Location sxleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).xleft;
+		Location sxright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).xright;
+		String s = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
+		Location txleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xleft;
+		Location txright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xright;
+		String t = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		//@@CUPDBG22
+ table.put(s, table.get(t)); 
+              CUP$Parser$result = parser.getSymbolFactory().newSymbol("assign",5, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
 
