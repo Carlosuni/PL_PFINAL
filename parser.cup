@@ -119,13 +119,13 @@ operando    ::= NUMBER:n	               		{: RESULT = Double.valueOf(n);       	
 			  | LPAREN expresion:e RPAREN	        {: RESULT = e;           							:}
               //| MINUS operando:e                {: RESULT = -e;           							:}           
               //| PLUS operando:e                 {: RESULT = e;           							:}
-              /*| ID:e 			                {:   Integer value = (Integer) varTable.get(e);
+              | ID:e 			                {:   Double value = (Double) varTable.get(e);
 												     if (value == null) {
 													   parser.report_error("Undeclared Identifier " + e, new Symbol(sym.ID, e));
-													   value = new Integer(0);
+													   value = new Double(0.0);
 													 }
 													 RESULT = value; 	      							:}           		
-             // | ID:e1 DOT ID:e2 			        {: RESULT = e1;          							:}           */		
+             // | ID:e1 DOT ID:e2 			        {: RESULT = e1;          							:}           		
 			  ;	   
 
 condicional ::= SI expresion_cond ENTONCES blq_sentencias FINSI	 {:  :}
