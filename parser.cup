@@ -47,8 +47,6 @@ terminal Integer    NUMBER;        // our scanner provides numbers as integers
 terminal String    	COMMENT;
 terminal Double    	DOUBLENUMBER;
 terminal Integer    HEXNUMBER;
-terminal String		EXPONENTIAL;
-terminal String		LOGARITHM;
 terminal String		ID;
 terminal String		CHARACTER;
 terminal String		BOOLEANVALUE;
@@ -78,7 +76,7 @@ non terminal 			operando_cond;
 non terminal 			term_cond;
 non terminal 			expresion_cond;
 //non terminal 			lista_cond_expresion;
-non terminal Double    expr;      // used to store evaluated subexpressions
+//non terminal Double    expr;      // used to store evaluated subexpressions
 non terminal Double    term;      // used to store evaluated subexpressions
 //non terminal Double    factor;      // used to store evaluated subexpressions
 
@@ -116,16 +114,15 @@ operando    ::= NUMBER:n	               		{: RESULT = Double.valueOf(n);       	
               | DOUBLENUMBER:n	            {: RESULT = n;       								:}
               | HEXNUMBER:n	                {: RESULT = Double.valueOf(n);       				:}     
 			  | LPAREN expresion:e RPAREN	        {: RESULT = e;           							:}
-              | EXPONENTIAL expresion:e1 RPAREN    {: RESULT = Math.exp(e1);        					:}         
-              | LOGARITHM expresion:e1 RPAREN   	{: RESULT = Math.log(e1);        					:}                  			
-              | MINUS operando:e                {: RESULT = -e;           							:}           
-              | PLUS operando:e                 {: RESULT = e;           							:}
-              | ID 			                {:            							:}           		
-              | ID DOT ID 			        {:           							:}           		
+              //| MINUS operando:e                {: RESULT = -e;           							:}           
+              //| PLUS operando:e                 {: RESULT = e;           							:}
+              | ID:e 			                {:   RESULT = e;         							:}           		
+              | ID:e1 DOT ID:e2 			        {: RESULT = e1;          							:}           		
 			  ;	   
 
-condicional ::= SI expresion ENTONCES blq_sentencias FINSI	 {:  :}
-              | SI expresion ENTONCES blq_sentencias SINO blq_sentencias FINSI 	 {:  :}
+
+condicional ::= SI expresion_cond ENTONCES blq_sentencias FINSI	 {:  :}
+              | SI expresion_cond ENTONCES blq_sentencias SINO blq_sentencias FINSI 	 {:  :}
               ;	
 
 bucle ::= MIENTRAS expresion blq_sentencias FINMIENTRAS	 {:  :}
@@ -151,12 +148,14 @@ lista_decl ::= decl_variable SEMI lista_decl	 {:  :}
 
 asignacion ::= ID ASSIGNSYMBOL expresion SEMI	 {:  :}
 		   	 | ID DOT ID ASSIGNSYMBOL expresion SEMI	 {:  :}
+		   	 | ID ASSIGNSYMBOL CHARACTER SEMI	 {:  :}
+		   	 | ID DOT ID ASSIGNSYMBOL CHARACTER SEMI	 {:  :}
 			 ;		
 
 def_funcion ::= FUNCION ID LPAREN lista_args RPAREN RETURN key_tipo LBRACE blq_sentencias RBRACE {:  :}
 			  | FUNCION ID LPAREN lista_args RPAREN RETURN ID LBRACE blq_sentencias RBRACE {:  :}
-		   	 | ID DOT ID ASSIGNSYMBOL expresion SEMI	 {:  :}
-			 ;	
+		   	  | ID DOT ID ASSIGNSYMBOL expresion SEMI	 {:  :}
+			  ;	
 			 
 arg ::= key_tipo  ID {:  :}
 	  ;	
@@ -208,24 +207,25 @@ term      ::= term:e1 TIMES operando:e2         {: RESULT = e1 * e2;        				
 		   	 		   | cond_expresion					 {:  :}
 			 		   ;*/
 			 					         
-expresion      ::= expr:e1 PLUS  term:e2         {: RESULT = e1 + e2;        						:}
-            | expr:e1 MINUS term:e2         {: RESULT = e1 - e2;        						:}
-			| term:e					    {: RESULT = e;        								:}	
-			| CHARACTER					    {:								:}	
-			| term_cond:e					    {: RESULT = e;        								:}	
-			;
+expresion ::= expresion:e1 PLUS  term:e2         {: RESULT = e1 + e2;        						:}
+           		 | expresion:e1 MINUS term:e2         {: RESULT = e1 - e2;        						:}
+	     		 | term:e					    {: RESULT = e;        								:}	
+				 ;		
 			
 operando_cond    ::= BOOLEANVALUE	               		{: 				:}
 			       | LPAREN expresion_cond:e RPAREN	        {: RESULT = e;           							:}       		
-			       | expresion GEQUAL expresion         {:        						:}
+			       | expresion_cond GEQUAL expresion         {:        						:}
     	           | expresion LEQUAL expresion         {:        						:}
          	       | expresion EQUALTO expresion         {:        						:}
      	           | expresion LTHAN expresion         {:        						:}
     	           | expresion GTHAN expresion         {:        						:}
-     	           | NOT expresion         {:        						:}            	 
-    	    	  ;	   
+    	    	   ;	   
     	    	  
 term_cond ::= term_cond AND operando_cond         {:        						:}
     	    | term_cond OR operando_cond         {:        						:}         
-			;  		      	    	  			
+			; 
+			
+expresion_cond ::= term_cond:e					    {: RESULT = e;        								:}	
+				 | NOT term_cond:e					    {: RESULT = !e;        								:}	
+			 	 ;			 		      	    	  			
        

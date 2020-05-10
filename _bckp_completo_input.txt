@@ -1,0 +1,50 @@
+27+15;
+<!-- Hello 
+3+2;
+World -->
+3+2;
+-2;
+3+3*2;
+6/3;
+10/4;
+0/3;
+3/0;
+-2+100-50/2*log(exp(-2));
+2.3;
+2e10;
+2e+10;
+2e-10;
+2E+10;
+2E-10;
+0xDEAF;
+0XDEAF;
+exp(2);
+3*exp(2.5);
+log(2);
+3*log(2.5);
+5*+3-80/10;
+10/5*2;
+-3*4;
+3-5*2;
+5*(4-3)/(8-(4-1));
+100-50/2;
+<!--REAL num;
+BOOLEANO espositivo;
+SI (num >= 0 AND num <= 4) OR (num NOT -2) ENTONCES
+espositivo := TRUE;
+SINO
+espositivo := FALSE;
+FINSI
+REAL a,b2,c3a,max;
+a := 1;
+MIENTRAS seguir AND punto1.radio>0
+FINMIENTRAS
+STRUCT VECTOR2D {REAL x1; REAL x2};
+alumno.nombre.l1 :='A';
+alumno.nombre.l1 :=’A’;
+FUNCION cuadrado( REAL a ) RETURN REAL
+{
+a * a;
+}
+ENTERO en2 := 6;-->
+

@@ -84,8 +84,13 @@ FalseValue = ( "F" | "f" ) ( "A" | "a" ) ( "L" | "l" ) ( "S" | "s" ) ( "E" | "e"
 //Whitespace = [ \t\f]
 WhitespaceNewline = [ \t\f] | {Newline}
 
-Id = [a-zA-Z_] [A-Z0-9a-z_]*
-//AttributeId = "." [a-z] [A-Z0-9a-z]*
+
+Exponential = "exp("
+Logarithm = "log("
+
+Id = [a-z_] [A-Z0-9a-z_]*
+
+AttributeId = "." [a-z] [A-Z0-9a-z]*
 
 SimpleComma = {SimpleComma1} | {SimpleComma2}
 SimpleComma1 = "'"
@@ -135,6 +140,8 @@ Return = ( "R" | "r" ) ( "E" | "e" ) ( "T" | "t" ) ( "U" | "u" ) ( "R" | "r" ) (
   {Comment}				{ return symbolFactory.newSymbol("COMMENT", COMMENT, yytext()); }
   {DoubleNumber}		{ return symbolFactory.newSymbol("DOUBLENUMBER", DOUBLENUMBER, Double.parseDouble(yytext())); }
   {HexNumber} 	  	 	{ return symbolFactory.newSymbol("HEXNUMBER", HEXNUMBER, Integer.parseInt(yytext().substring(2,yytext().length()), 16)); }
+  {Exponential}			{ return symbolFactory.newSymbol("EXPONENTIAL", EXPONENTIAL, yytext()); }
+  {Logarithm}			{ return symbolFactory.newSymbol("LOGARITHM", LOGARITHM, yytext()); }
   {And}          		{ return symbolFactory.newSymbol("AND", AND); }
   {Or}          		{ return symbolFactory.newSymbol("OR", OR); }
   {Not}          		{ return symbolFactory.newSymbol("NOT", NOT); }
@@ -152,6 +159,7 @@ Return = ( "R" | "r" ) ( "E" | "e" ) ( "T" | "t" ) ( "U" | "u" ) ( "R" | "r" ) (
   "}"          			{ return symbolFactory.newSymbol("RBRACE", RBRACE); }
   "."          			{ return symbolFactory.newSymbol("DOT", DOT); }
   ","          			{ return symbolFactory.newSymbol("COMMA", COMMA); }
+  {SimpleComma} 		{ return symbolFactory.newSymbol("SIMPLECOMMA", SIMPLECOMMA); }
   ":="          		{ return symbolFactory.newSymbol("ASSIGNSYMBOL", ASSIGNSYMBOL); }
   {Si}          		{ return symbolFactory.newSymbol("SI", SI); }
   {Entonces}        	{ return symbolFactory.newSymbol("ENTONCES", ENTONCES); }
@@ -162,8 +170,9 @@ Return = ( "R" | "r" ) ( "E" | "e" ) ( "T" | "t" ) ( "U" | "u" ) ( "R" | "r" ) (
   {Funcion}         	{ return symbolFactory.newSymbol("FUNCION", FUNCION); }
   {Return}          	{ return symbolFactory.newSymbol("RETURN", RETURN); }
   {BooleanValue}    	{ return symbolFactory.newSymbol("BOOLEANVALUE", BOOLEANVALUE, yytext()); }  
-  {Character}      		{ return symbolFactory.newSymbol("CHARACTER", CHARACTER, yytext()); }
   {Id}    				{ return symbolFactory.newSymbol("ID", ID, yytext()); }
+  {AttributeId}    		{ return symbolFactory.newSymbol("ATTRIBUTEID", ATTRIBUTEID, yytext()); }
+  {Character}      		{ return symbolFactory.newSymbol("CHARACTER", CHARACTER, yytext()); }
 }
 
 

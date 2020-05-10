@@ -1,0 +1,92 @@
+/*
+   Simple +/-/* expression language; 
+   parser evaluates constant expressions on the fly
+*/
+
+package cup.pFinal;
+
+import java_cup.runtime.*;
+import cup.pFinal.Lexer;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+
+/* Custom Imports */
+import java.lang.Math; 
+
+
+parser code {:
+  protected Lexer lexer;
+:}
+
+/* define how to connect to the scanner! */
+init with {:
+  ComplexSymbolFactory f = new ComplexSymbolFactory();
+  symbolFactory = f;
+  File file = new File("input.txt");
+  FileInputStream fis = null;
+  try {
+    fis = new FileInputStream(file);
+  } catch (IOException e) {
+    e.printStackTrace();
+  } 
+  lexer = new Lexer(f,fis);
+:};
+scan with {: return lexer.next_token(); :};
+
+/* Terminals (tokens returned by the scanner). */
+terminal            SEMI, PLUS, MINUS, TIMES, DIVIDEDBY, LPAREN, RPAREN;
+terminal            AND, OR, NOT, EQUALTO, LEQUAL, GEQUAL;
+terminal            INTTYPE, REALTYPE, BOOLEANTYPE, STRUCTTYPE, CHARTYPE;
+terminal          	TRUEVALUE, FALSEVALUE;
+terminal            LBRACE, RBRACE, DOT, COMMA, SIMPLECOMMA, ASSIGNSYMBOL;
+terminal          	SI, ENTONCES, SINO, FINSI, MIENTRAS, FINMIENTRAS;
+terminal          	FUNCION, RETURN;
+terminal Integer    NUMBER;        // our scanner provides numbers as integers
+
+terminal String    	COMMENT;
+terminal Double    	DOUBLENUMBER;
+terminal Integer    HEXNUMBER;
+terminal String		EXPONENTIAL;
+terminal String		LOGARITHM;
+terminal String		ID;
+terminal String		CAPSID;
+terminal String		ATTRIBUTEID;
+
+/* Non terminals */
+non terminal            statement_list;
+non terminal            statement;
+non terminal Double    expr;      // used to store evaluated subexpressions
+non terminal Double    term;      // used to store evaluated subexpressions
+non terminal Double    factor;      // used to store evaluated subexpressions
+
+
+/* The grammar rules */
+statement_list ::= statement_list statement 	{:  :}
+           		 | statement                   	{:  :}
+            	 ;
+            
+statement ::= expr:e SEMI        			{: System.out.println(e); 							:}
+            | COMMENT	                    {:  												:}
+			;     
+			  
+factor    ::= NUMBER:n	               		{: RESULT = Double.valueOf(n);       				:}
+            | DOUBLENUMBER:n	            {: RESULT = n;       								:}
+            | HEXNUMBER:n	                {: RESULT = Double.valueOf(n);       				:}     
+			| LPAREN expr:e RPAREN	        {: RESULT = e;           							:}
+            | EXPONENTIAL expr:e1 RPAREN    {: RESULT = Math.exp(e1);        					:}         
+            | LOGARITHM expr:e1 RPAREN   	{: RESULT = Math.log(e1);        					:}                  			
+            | MINUS factor:e                {: RESULT = -e;           							:}           
+            | PLUS factor:e                 {: RESULT = e;           							:}           		
+			;
+ 
+term      ::= term:e1 TIMES factor:e2         {: RESULT = e1 * e2;        						:}
+            | term:e1 DIVIDEDBY factor:e2     {: RESULT = e1 / e2;        						:}
+            | factor:e					      {: RESULT = e;        							:}
+			;            
+         
+expr      ::= expr:e1 PLUS  term:e2         {: RESULT = e1 + e2;        						:}
+            | expr:e1 MINUS term:e2         {: RESULT = e1 - e2;        						:}
+			| term:e					    {: RESULT = e;        								:}	
+			;
+       
