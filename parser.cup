@@ -137,20 +137,20 @@ bucle ::= MIENTRAS expresion blq_sentencias FINMIENTRAS	 {:  :}
 
 key_tipo ::= INTTYPE	 {:  :}
 		   | REALTYPE	 {:  :}
-		   | BOOLEANTYPE	 {:  :}
-		   | CHARTYPE	 {:  :}
+		   | BOOLEANTYPE	 {: :}
+		   | CHARTYPE	 {:   :}
 		   ;
 
-decl_variable ::= key_tipo:e ID ASSIGNSYMBOL expresion SEMI	 {:  :}
-		   		| key_tipo ID SEMI	 {:  :}
-		   		| ID ID	 {:  :}
+decl_variable ::= key_tipo:k ID:i ASSIGNSYMBOL expresion:e SEMI	 {: varTable.put(i , e); :}
+		   		| key_tipo ID:i SEMI	 {: varTable.put(i , null); :}
+		   		| ID:i1 ID:i2 SEMI 		 {: varTable.put(i2 , null); :}
 				;		   
 
 decl_struct ::= STRUCTTYPE ID LBRACE lista_decl RBRACE SEMI	 {:  :}
 				;	
 						   
-lista_decl ::= decl_variable SEMI lista_decl	 {:  :}
-		   	 | decl_variable SEMI	 {:  :}
+lista_decl ::= decl_variable lista_decl	 {:  :}
+		   	 | decl_variable	 {:  :}
 			 ;
 
 asignacion ::= ID ASSIGNSYMBOL expresion SEMI	 {:  :}
