@@ -62,36 +62,59 @@ Number     = [0-9]+
 
 
 /* comments */
-Comment = {TraditionalComment} | {EndOfLineComment} | {ModernComment}
+Comment = {TraditionalComment} | {EndOfLineComment} | {ModernComment} | {SharpComment}
 TraditionalComment = "/*" {CommentContent} \*+ "/"
 EndOfLineComment = "//" [^\r\n]* {Newline}
 CommentContent = ( [^*] | \*+[^*/] )*
 
 ModernComment = "<!--" ( . | {Newline} )* "-->"
+SharpComment = "<#" .*
 
 RealNumber = {Number} "." {Number}
-ScienceNumber = ( {Number} | {RealNumber} ) ( "e" | "E" )( "-" | "+" | "" ) {Number}
+ScienceNumber = ( [1-9] | [1-9] "." {Number} ) "E" ( "-" | "+" | "" ) {Number}
 DoubleNumber = {RealNumber} | {ScienceNumber}
 HexAlfaNumber = ( [0-9A-F] )+
 HexNumber = "0x" {HexAlfaNumber} | "0X" {HexAlfaNumber}
+Character = ( {SimpleComma1} . {SimpleComma1} ) | ( {SimpleComma2} . {SimpleComma2} )
+BooleanValue = {TrueValue} | {FalseValue}
+TrueValue = ( "T" | "t" ) ( "R" | "r" ) ( "U" | "u" ) ( "E" | "e" ) 
+FalseValue = ( "F" | "f" ) ( "A" | "a" ) ( "L" | "l" ) ( "S" | "s" ) ( "E" | "e" ) 
 
-Whitespace = [ \t\f]
+//ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
+//Whitespace = [ \t\f]
 WhitespaceNewline = [ \t\f] | {Newline}
 
 
 Exponential = "exp("
 Logarithm = "log("
 
-Id = [a-z] [A-Z0-9a-z]*
-CapsId = [A-Z] [A-Z0-9]*
+Id = [a-zA-Z_] [A-Z0-9a-z_]*
+//AttributeId = "." [a-z] [A-Z0-9a-z]*
 
-AttributeId = "." [a-z] [A-Z0-9a-z]*
+SimpleComma = {SimpleComma1} | {SimpleComma2}
+SimpleComma1 = "'"
+SimpleComma2 = "’"
 
-SimpleComma = "'" | "’"
+And = ( "A" | "a" ) ( "N" | "n" ) ( "D" | "d" ) | "&"
+Or = ( "O" | "o" ) ( "R" | "r" ) | "|"
+Not = ( "N" | "n" ) ( "O" | "o" ) ( "T" | "t" ) 
 
+IntType = ( "E" | "e" ) ( "N" | "n" ) ( "T" | "t" ) ( "E" | "e" ) ( "R" | "r" ) ( "O" | "o" )
+RealType = ( "R" | "r" ) ( "E" | "e" ) ( "A" | "a" ) ( "L" | "l" ) 
+BooleanType = ( "B" | "b" ) ( "O" | "o" ) ( "O" | "o" ) ( "L" | "l" ) ( "E" | "e" ) ( "A" | "a" ) ( "N" | "n" ) ( "O" | "o" ) 
+CharType = ( "C" | "c" ) ( "A" | "a" ) ( "R" | "r" ) ( "A" | "a" ) ( "C" | "c" ) ( "T" | "t" ) ( "E" | "e" ) ( "R" | "r" ) 
+StructType = ( "S" | "s" ) ( "T" | "t" ) ( "R" | "r" ) ( "U" | "u" ) ( "C" | "c" ) ( "T" | "t" ) 
 
+Si = ( "S" | "s" ) ( "I" | "i" )
+SiNo = ( "S" | "s" ) ( "I" | "i" ) ( "N" | "n" ) ( "O" | "o" ) 
+FinSi = ( "F" | "f" ) ( "I" | "i" ) ( "N" | "n" ) ( "S" | "s" ) ( "I" | "i" ) 
 
-ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
+Entonces = ( "E" | "e" ) ( "N" | "n" ) ( "T" | "t" ) ( "O" | "o" ) ( "N" | "n" ) ( "C" | "c" ) ( "E" | "e" ) ( "S" | "s" ) 
+Mientras = ( "M" | "m" ) ( "I" | "i" ) ( "E" | "e" ) ( "N" | "n" ) ( "T" | "t" ) ( "R" | "r" ) ( "A" | "a" ) ( "S" | "s" )
+FinMientras = ( "F" | "f" ) ( "I" | "i" ) ( "N" | "n" ) ( "M" | "m" ) ( "I" | "i" ) ( "E" | "e" ) ( "N" | "n" ) ( "T" | "t" ) ( "R" | "r" ) ( "A" | "a" ) ( "S" | "s" ) 
+
+Funcion = ( "F" | "f" ) ( "U" | "u" ) ( "N" | "n" ) ( "C" | "c" ) ( "I" | "i" ) ( "O" | "o" ) ( "N" | "n" )  
+Return = ( "R" | "r" ) ( "E" | "e" ) ( "T" | "t" ) ( "U" | "u" ) ( "R" | "r" ) ( "N" | "n" ) 
 
 
 %eofval{
@@ -104,50 +127,49 @@ ident = ([:jletter:] | "_" ) ([:jletterdigit:] | [:jletter:] | "_" )*
 
 <YYINITIAL> {
 
-  {WhitespaceNewline} {                              }
-  ";"          		{ return symbolFactory.newSymbol("SEMI", SEMI); }
-  "+"          		{ return symbolFactory.newSymbol("PLUS", PLUS); }
-  "-"          		{ return symbolFactory.newSymbol("MINUS", MINUS); }
-  "*"          		{ return symbolFactory.newSymbol("TIMES", TIMES); }
-  "/"          		{ return symbolFactory.newSymbol("DIVIDEDBY", DIVIDEDBY); }
-  "("          		{ return symbolFactory.newSymbol("LPAREN", LPAREN); }
-  ")"          		{ return symbolFactory.newSymbol("RPAREN", RPAREN); }
-  {Number}     		{ return symbolFactory.newSymbol("NUMBER", NUMBER, Integer.parseInt(yytext())); }
-  {Comment}			{ return symbolFactory.newSymbol("COMMENT", COMMENT, yytext()); }
-  {DoubleNumber}	{ return symbolFactory.newSymbol("DOUBLENUMBER", DOUBLENUMBER, Double.parseDouble(yytext())); }
-  {HexNumber} 	    { return symbolFactory.newSymbol("HEXNUMBER", HEXNUMBER, Integer.parseInt(yytext().substring(2,yytext().length()), 16)); }
-  {Exponential}		{ return symbolFactory.newSymbol("EXPONENTIAL", EXPONENTIAL, yytext()); }
-  {Logarithm}		{ return symbolFactory.newSymbol("LOGARITHM", LOGARITHM, yytext()); }
-  "AND"          	{ return symbolFactory.newSymbol("AND", AND); }
-  "OR"          	{ return symbolFactory.newSymbol("OR", OR); }
-  "NOT"          	{ return symbolFactory.newSymbol("NOT", NOT); }
-  "=="          	{ return symbolFactory.newSymbol("EQUALTO", EQUALTO); }
-  "<="          	{ return symbolFactory.newSymbol("LEQUAL", LEQUAL); }
-  ">="          	{ return symbolFactory.newSymbol("GEQUAL", GEQUAL); }
-  "ENTERO"         	{ return symbolFactory.newSymbol("INTTYPE", INTTYPE); }
-  "REAL"          	{ return symbolFactory.newSymbol("REALTYPE", REALTYPE); }
-  "BOOLEANO"        { return symbolFactory.newSymbol("BOOLEANTYPE", BOOLEANTYPE); }
-  "CARACTER"        { return symbolFactory.newSymbol("CHARTYPE", CHARTYPE); }
-  "STRUCT"          { return symbolFactory.newSymbol("STRUCTTYPE", STRUCTTYPE); }
-  "{"          		{ return symbolFactory.newSymbol("LBRACE", LBRACE); }
-  "}"          		{ return symbolFactory.newSymbol("RBRACE", RBRACE); }
-  "."          		{ return symbolFactory.newSymbol("DOT", DOT); }
-  ","          		{ return symbolFactory.newSymbol("COMMA", COMMA); }
-  {SimpleComma} 	{ return symbolFactory.newSymbol("SIMPLECOMMA", SIMPLECOMMA); }
-  ":="          	{ return symbolFactory.newSymbol("ASSIGNSYMBOL", ASSIGNSYMBOL); }
-  "SI"          	{ return symbolFactory.newSymbol("SI", SI); }
-  "ENTONCES"        { return symbolFactory.newSymbol("ENTONCES", ENTONCES); }
-  "SINO"          	{ return symbolFactory.newSymbol("SINO", SINO); }
-  "FINSI"          	{ return symbolFactory.newSymbol("FINSI", FINSI); }
-  "MIENTRAS"        { return symbolFactory.newSymbol("MIENTRAS", MIENTRAS); }
-  "FINMIENTRAS"     { return symbolFactory.newSymbol("FINMIENTRAS", FINMIENTRAS); }
-  "FUNCION"         { return symbolFactory.newSymbol("FUNCION", FUNCION); }
-  "RETURN"          { return symbolFactory.newSymbol("RETURN", RETURN); }
-  {Id}    			{ return symbolFactory.newSymbol("ID", ID, yytext()); }
-  {CapsId}          { return symbolFactory.newSymbol("CAPSID", CAPSID, yytext()); }
-  {AttributeId}    	{ return symbolFactory.newSymbol("ATTRIBUTEID", ATTRIBUTEID, yytext()); }
-  "TRUE"         	{ return symbolFactory.newSymbol("TRUEVALUE", TRUEVALUE); }
-  "FALSE"         	{ return symbolFactory.newSymbol("FALSEVALUE", FALSEVALUE); }
+  {WhitespaceNewline}	{                              }
+  ";"          			{ return symbolFactory.newSymbol("SEMI", SEMI); }
+  "+"          			{ return symbolFactory.newSymbol("PLUS", PLUS); }
+  "-"          			{ return symbolFactory.newSymbol("MINUS", MINUS); }
+  "*"          			{ return symbolFactory.newSymbol("TIMES", TIMES); }
+  "/"          			{ return symbolFactory.newSymbol("DIVIDEDBY", DIVIDEDBY); }
+  "("          			{ return symbolFactory.newSymbol("LPAREN", LPAREN); }
+  ")"          			{ return symbolFactory.newSymbol("RPAREN", RPAREN); }
+  {Number}     			{ return symbolFactory.newSymbol("NUMBER", NUMBER, Integer.parseInt(yytext())); }
+  {Comment}				{ return symbolFactory.newSymbol("COMMENT", COMMENT, yytext()); }
+  {DoubleNumber}		{ return symbolFactory.newSymbol("DOUBLENUMBER", DOUBLENUMBER, Double.parseDouble(yytext())); }
+  {HexNumber} 	  	 	{ return symbolFactory.newSymbol("HEXNUMBER", HEXNUMBER, Integer.parseInt(yytext().substring(2,yytext().length()), 16)); }
+  {Exponential}			{ return symbolFactory.newSymbol("EXPONENTIAL", EXPONENTIAL, yytext()); }
+  {Logarithm}			{ return symbolFactory.newSymbol("LOGARITHM", LOGARITHM, yytext()); }
+  {And}          		{ return symbolFactory.newSymbol("AND", AND); }
+  {Or}          		{ return symbolFactory.newSymbol("OR", OR); }
+  {Not}          		{ return symbolFactory.newSymbol("NOT", NOT); }
+  "<"          			{ return symbolFactory.newSymbol("LTHAN", LTHAN); }
+  ">"          			{ return symbolFactory.newSymbol("GTHAN", GTHAN); }
+  "=="          		{ return symbolFactory.newSymbol("EQUALTO", EQUALTO); }
+  "<="          		{ return symbolFactory.newSymbol("LEQUAL", LEQUAL); }
+  ">="          		{ return symbolFactory.newSymbol("GEQUAL", GEQUAL); }
+  {IntType}      	    { return symbolFactory.newSymbol("INTTYPE", INTTYPE); }
+  {RealType}     	    { return symbolFactory.newSymbol("REALTYPE", REALTYPE); }
+  {BooleanType}   	    { return symbolFactory.newSymbol("BOOLEANTYPE", BOOLEANTYPE); }
+  {CharType}          	{ return symbolFactory.newSymbol("CHARTYPE", CHARTYPE); }
+  {StructType}      	{ return symbolFactory.newSymbol("STRUCTTYPE", STRUCTTYPE); }
+  "{"          			{ return symbolFactory.newSymbol("LBRACE", LBRACE); }
+  "}"          			{ return symbolFactory.newSymbol("RBRACE", RBRACE); }
+  "."          			{ return symbolFactory.newSymbol("DOT", DOT); }
+  ","          			{ return symbolFactory.newSymbol("COMMA", COMMA); }
+  ":="          		{ return symbolFactory.newSymbol("ASSIGNSYMBOL", ASSIGNSYMBOL); }
+  {Si}          		{ return symbolFactory.newSymbol("SI", SI); }
+  {Entonces}        	{ return symbolFactory.newSymbol("ENTONCES", ENTONCES); }
+  {SiNo}          		{ return symbolFactory.newSymbol("SINO", SINO); }
+  {FinSi}          		{ return symbolFactory.newSymbol("FINSI", FINSI); }
+  {Mientras}        	{ return symbolFactory.newSymbol("MIENTRAS", MIENTRAS); }
+  {FinMientras}     	{ return symbolFactory.newSymbol("FINMIENTRAS", FINMIENTRAS); }
+  {Funcion}         	{ return symbolFactory.newSymbol("FUNCION", FUNCION); }
+  {Return}          	{ return symbolFactory.newSymbol("RETURN", RETURN); }
+  {BooleanValue}    	{ return symbolFactory.newSymbol("BOOLEANVALUE", BOOLEANVALUE, yytext()); }  
+  {Character}      		{ return symbolFactory.newSymbol("CHARACTER", CHARACTER, yytext()); }
+  {Id}    				{ return symbolFactory.newSymbol("ID", ID, yytext()); }
 }
 
 
