@@ -143,11 +143,11 @@ Return = ( "R" | "r" ) ( "E" | "e" ) ( "T" | "t" ) ( "U" | "u" ) ( "R" | "r" ) (
   "=="          		{ return symbolFactory.newSymbol("EQUALTO", EQUALTO); }
   "<="          		{ return symbolFactory.newSymbol("LEQUAL", LEQUAL); }
   ">="          		{ return symbolFactory.newSymbol("GEQUAL", GEQUAL); }
-  {IntType}      	    { return symbolFactory.newSymbol("INTTYPE", INTTYPE); }
-  {RealType}     	    { return symbolFactory.newSymbol("REALTYPE", REALTYPE); }
-  {BooleanType}   	    { return symbolFactory.newSymbol("BOOLEANTYPE", BOOLEANTYPE); }
-  {CharType}          	{ return symbolFactory.newSymbol("CHARTYPE", CHARTYPE); }
-  {StructType}      	{ return symbolFactory.newSymbol("STRUCTTYPE", STRUCTTYPE); }
+  {IntType}      	    { return symbolFactory.newSymbol("INTTYPE", INTTYPE, yytext()); }
+  {RealType}     	    { return symbolFactory.newSymbol("REALTYPE", REALTYPE, yytext()); }
+  {BooleanType}   	    { return symbolFactory.newSymbol("BOOLEANTYPE", BOOLEANTYPE, yytext()); }
+  {CharType}          	{ return symbolFactory.newSymbol("CHARTYPE", CHARTYPE, yytext()); }
+  {StructType}      	{ return symbolFactory.newSymbol("STRUCTTYPE", STRUCTTYPE, yytext()); }
   "{"          			{ return symbolFactory.newSymbol("LBRACE", LBRACE); }
   "}"          			{ return symbolFactory.newSymbol("RBRACE", RBRACE); }
   "."          			{ return symbolFactory.newSymbol("DOT", DOT); }

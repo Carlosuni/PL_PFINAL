@@ -21,4 +21,9 @@ World -->
 3*4;
 3-5*2;
 5*(4-3)/(8-(4-1));
+REAL re;
+re := 5.0;
+re_not_exist := 5.0;
+STRUCT VECTOR2D {REAL x1; REAL x2};
+
 

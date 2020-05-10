@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Hashtable;
+import java.util.List;
+
 
 /* Custom Imports */
 import java.lang.Math; 
@@ -18,8 +20,8 @@ import java.lang.Math;
 
 parser code {:
   protected Lexer lexer;
-  Hashtable varTable = new Hashtable();
-  Hashtable structTable = new Hashtable();
+  Hashtable<String, Double> varTable = new Hashtable<String, Double>();
+  Hashtable<String, List> structTable = new Hashtable<String, List>();
 :}
 
 
@@ -41,7 +43,7 @@ scan with {: return lexer.next_token(); :};
 /* Terminals (tokens returned by the scanner). */
 terminal            SEMI, PLUS, MINUS, TIMES, DIVIDEDBY, LPAREN, RPAREN;
 terminal            AND, OR, NOT, EQUALTO, LEQUAL, GEQUAL, LTHAN, GTHAN;
-terminal            INTTYPE, REALTYPE, BOOLEANTYPE, STRUCTTYPE, CHARTYPE;
+terminal String 	INTTYPE, REALTYPE, BOOLEANTYPE, STRUCTTYPE, CHARTYPE;
 terminal            LBRACE, RBRACE, DOT, COMMA, ASSIGNSYMBOL;
 terminal          	SI, ENTONCES, SINO, FINSI, MIENTRAS, FINMIENTRAS;
 terminal          	FUNCION, RETURN;
@@ -78,10 +80,7 @@ non terminal 			lista_expresiones;
 non terminal Boolean	operando_cond;
 non terminal Boolean	term_cond;
 non terminal Boolean	expresion_cond;
-//non terminal 			lista_cond_expresion;
-//non terminal Double    expr;      // used to store evaluated subexpressions
 non terminal Double    term;      // used to store evaluated subexpressions
-//non terminal Double    factor;      // used to store evaluated subexpressions
 
 
 /* The grammar rules */
@@ -99,10 +98,11 @@ sentencia ::= sent_decl			{:  :}
             | COMMENT	                    {:  												:}			
             | uso_funcion	                    {:  												:}			
             | def_funcion	                    {:  												:}			
+            | asignacion	                    {:  												:}			
 			;
 			
-sent_decl ::= decl_variable			{:  :}
-			| decl_struct			{:  :}
+sent_decl ::= decl_variable SEMI			{:  :}
+			| decl_struct SEMI			{:  :}
 			;
 			
 sent_uso ::= asignacion SEMI			{:  :}
@@ -121,7 +121,7 @@ operando    ::= NUMBER:n	               		{: RESULT = Double.valueOf(n);       	
               //| PLUS operando:e                 {: RESULT = e;           							:}
               | ID:e 			                {:   Double value = (Double) varTable.get(e);
 												     if (value == null) {
-													   parser.report_error("Undeclared Identifier " + e, new Symbol(sym.ID, e));
+													   parser.report_error("Error: Undeclared Identifier " + e, new Symbol(sym.ID, e));
 													   value = new Double(0.0);
 													 }
 													 RESULT = value; 	      							:}           		
@@ -135,25 +135,33 @@ condicional ::= SI expresion_cond ENTONCES blq_sentencias FINSI	 {:  :}
 bucle ::= MIENTRAS expresion blq_sentencias FINMIENTRAS	 {:  :}
         ;	
 
-key_tipo ::= INTTYPE	 {:  :}
-		   | REALTYPE	 {:  :}
-		   | BOOLEANTYPE	 {: :}
-		   | CHARTYPE	 {:   :}
+key_tipo ::= INTTYPE:e	 {: RESULT = e; :}
+		   | REALTYPE:e	 {: RESULT = e; :}
+		   | BOOLEANTYPE:e	 {: RESULT = e; :}
+		   | CHARTYPE:e	 {: RESULT = e; :}
 		   ;
 
-decl_variable ::= key_tipo:k ID:i ASSIGNSYMBOL expresion:e SEMI	 {: varTable.put(i , e); :}
-		   		| key_tipo ID:i SEMI	 {: varTable.put(i , null); :}
-		   		| ID:i1 ID:i2 SEMI 		 {: varTable.put(i2 , null); :}
+decl_variable ::= key_tipo:k ID:i ASSIGNSYMBOL expresion:e	 {: varTable.put(i , e);
+																	System.out.println(k + " " + i + " := " + e + ";"); :}
+		   		| key_tipo:k ID:i	 {: varTable.put(i , new Double(0.0));
+											System.out.println(k + " " + i + ";"); :}
+		   		| ID:i1 ID:i2 		 {: varTable.put(i2 , new Double(0.0));
+											System.out.println(i1 + " " + i2 + ";"); :}
 				;		   
 
-decl_struct ::= STRUCTTYPE ID LBRACE lista_decl RBRACE SEMI	 {:  :}
+decl_struct ::= STRUCTTYPE ID LBRACE lista_decl RBRACE	 {:  :}
 				;	
 						   
-lista_decl ::= decl_variable lista_decl	 {:  :}
+lista_decl ::= lista_decl SEMI decl_variable	 {:  :}
 		   	 | decl_variable	 {:  :}
 			 ;
 
-asignacion ::= ID ASSIGNSYMBOL expresion SEMI	 {:  :}
+asignacion ::= ID:i ASSIGNSYMBOL expresion:e SEMI	 {: if (varTable.get(i) != null) {
+														  varTable.put(i , e);
+														  System.out.println(i + " := " + e + ";");
+														} else {
+														  parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, e));
+                                                        } :}
 		   	 | ID DOT ID ASSIGNSYMBOL expresion SEMI	 {:  :}
 		   	 | ID ASSIGNSYMBOL CHARACTER SEMI	 {:  :}
 		   	 | ID DOT ID ASSIGNSYMBOL CHARACTER SEMI	 {:  :}
@@ -161,7 +169,6 @@ asignacion ::= ID ASSIGNSYMBOL expresion SEMI	 {:  :}
 
 def_funcion ::= FUNCION ID LPAREN lista_args RPAREN RETURN key_tipo LBRACE blq_sentencias RBRACE {:  :}
 			  | FUNCION ID LPAREN lista_args RPAREN RETURN ID LBRACE blq_sentencias RBRACE {:  :}
-		   	  | ID DOT ID ASSIGNSYMBOL expresion SEMI	 {:  :}
 			  ;	
 			 
 arg ::= key_tipo  ID {:  :}
@@ -177,22 +184,7 @@ uso_funcion ::= ID LBRACE lista_expresiones RBRACE 		{:  :}
 
 lista_expresiones ::= lista_expresiones COMMA expresion  			{:  :}
 		   	 		| expresion:e					 {: RESULT = e; :}
-			 		;					  
-            
-/*statement ::= expr:e SEMI        			{: System.out.println(e); 							:}
-            | COMMENT	                    {:  												:}
-			;*/     
-			  
-/*factor    ::= NUMBER:n	               		{: RESULT = Double.valueOf(n);       				:}
-            | DOUBLENUMBER:n	            {: RESULT = n;       								:}
-            | HEXNUMBER:n	                {: RESULT = Double.valueOf(n);       				:}     
-			| LPAREN expr:e RPAREN	        {: RESULT = e;           							:}
-            | EXPONENTIAL expr:e1 RPAREN    {: RESULT = Math.exp(e1);        					:}         
-            | LOGARITHM expr:e1 RPAREN   	{: RESULT = Math.log(e1);        					:}                  			
-            | MINUS factor:e                {: RESULT = -e;           							:}           
-            ; */
-
-			
+			 		;					  	
  
 term ::= term:e1 TIMES operando:e2         {: RESULT = e1 * e2;        						:}
        | term:e1 DIVIDEDBY operando:e2     {: RESULT = e1 / e2;        						:}
