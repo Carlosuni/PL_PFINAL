@@ -176,7 +176,7 @@ uso_funcion ::= ID LBRACE lista_expresiones RBRACE 		{:  :}
 		   	  ;			
 
 lista_expresiones ::= lista_expresiones COMMA expresion  			{:  :}
-		   	 		| expresion					 {:  :}
+		   	 		| expresion:e					 {: RESULT = e; :}
 			 		;					  
             
 /*statement ::= expr:e SEMI        			{: System.out.println(e); 							:}
@@ -194,45 +194,30 @@ lista_expresiones ::= lista_expresiones COMMA expresion  			{:  :}
 
 			
  
-term      ::= term:e1 TIMES operando:e2         {: RESULT = e1 * e2;        						:}
-            | term:e1 DIVIDEDBY operando:e2     {: RESULT = e1 / e2;        						:}
-            | operando:e					      {: RESULT = e;        							:}
-			;            
-         
-/*cond_expresion ::= expresion GEQUAL expresion         {:        						:}
-            	 | expresion LEQUAL expresion         {:        						:}
-            	 | expresion EQUALTO expresion         {:        						:}
-            	 | expresion LTHAN expresion         {:        						:}
-            	 | expresion GTHAN expresion         {:        						:}
-            	 | NOT cond_expresion         {:        						:}            	 
-            	 | cond_expresion AND cond_expresion         {:        						:}
-            	 | cond_expresion OR cond_expresion         {:        						:}
-            	 | BOOLEANVALUE         {:        						:}
-			;  */
+term ::= term:e1 TIMES operando:e2         {: RESULT = e1 * e2;        						:}
+       | term:e1 DIVIDEDBY operando:e2     {: RESULT = e1 / e2;        						:}
+       | operando:e					       {: RESULT = e;        							:}
+	   ;            
+         			         
+expresion ::= expresion:e1 PLUS  term:e2         		 {: RESULT = e1 + e2;        						:}
+           	| expresion:e1 MINUS term:e2         		 {: RESULT = e1 - e2;        						:}
+	     	| term:e					  				 {: RESULT = e;        								:}	
+			;		
 			
-/*lista_cond_expresion ::= lista_cond_expresion cond_expresion  			{:  :}
-		   	 		   | cond_expresion					 {:  :}
-			 		   ;*/
-			 					         
-expresion ::= expresion:e1 PLUS  term:e2         {: RESULT = e1 + e2;        						:}
-           		 | expresion:e1 MINUS term:e2         {: RESULT = e1 - e2;        						:}
-	     		 | term:e					    {: RESULT = e;        								:}	
-				 ;		
-			
-operando_cond    ::= BOOLEANVALUE:e	               		{: RESULT = e; 				:}
-			       | LPAREN expresion_cond:e RPAREN	        {: RESULT = e;           							:}       		
-			       | expresion:e1 GEQUAL expresion:e2         {: RESULT = e1 >= e2;        						:}
-    	           | expresion:e1 LEQUAL expresion:e2         {:   RESULT = e1 <= e2;			:}
-         	       | expresion:e1 EQUALTO expresion:e2         {:    RESULT = e1 == e2;	:}
-     	           | expresion:e1 LTHAN expresion:e2         {:    RESULT = e1 < e2;		:}
-    	           | expresion:e1 GTHAN expresion:e2         {:    RESULT = e1 > e2;			:}
-    	    	   ;	   
+operando_cond ::= BOOLEANVALUE:e	               		 {: RESULT = e; 				:}
+			    | LPAREN expresion_cond:e RPAREN	     {: RESULT = e;           							:}       		
+			    | expresion:e1 GEQUAL expresion:e2       {: RESULT = e1 >= e2;        						:}
+    	        | expresion:e1 LEQUAL expresion:e2       {:   RESULT = e1 <= e2;			:}
+         	    | expresion:e1 EQUALTO expresion:e2      {:    RESULT = e1 == e2;	:}
+     	        | expresion:e1 LTHAN expresion:e2        {:    RESULT = e1 < e2;		:}
+    	        | expresion:e1 GTHAN expresion:e2        {:    RESULT = e1 > e2;			:}
+    	    	;	   
     	    	  
-term_cond ::= term_cond:e1 AND operando_cond:e2         {:     RESULT = e1 && e2;   						:}
-    	    | term_cond:e1 OR operando_cond:e2         {:    RESULT = e1 || e2;		:}         
+term_cond ::= term_cond:e1 AND operando_cond:e2         	{:     RESULT = e1 && e2;   						:}
+    	    | term_cond:e1 OR operando_cond:e2        		{:    RESULT = e1 || e2;		:}         
 			; 
 			
-expresion_cond ::= term_cond:e					    {: RESULT = e;        								:}	
-				 | NOT term_cond:e					    {: RESULT = !e;        								:}	
+expresion_cond ::= term_cond:e					    		{: RESULT = e;        								:}	
+				 | NOT term_cond:e					    	{: RESULT = !e;        								:}	
 			 	 ;			 		      	    	  			
        
