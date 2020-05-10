@@ -161,7 +161,7 @@ Return = ( "R" | "r" ) ( "E" | "e" ) ( "T" | "t" ) ( "U" | "u" ) ( "R" | "r" ) (
   {FinMientras}     	{ return symbolFactory.newSymbol("FINMIENTRAS", FINMIENTRAS); }
   {Funcion}         	{ return symbolFactory.newSymbol("FUNCION", FUNCION); }
   {Return}          	{ return symbolFactory.newSymbol("RETURN", RETURN); }
-  {BooleanValue}    	{ return symbolFactory.newSymbol("BOOLEANVALUE", BOOLEANVALUE, yytext()); }  
+  {BooleanValue}    	{ return symbolFactory.newSymbol("BOOLEANVALUE", BOOLEANVALUE, Boolean.parseBoolean(yytext())); }  
   {Character}      		{ return symbolFactory.newSymbol("CHARACTER", CHARACTER, yytext()); }
   {Id}    				{ return symbolFactory.newSymbol("ID", ID, yytext()); }
 }

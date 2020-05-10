@@ -11,14 +11,13 @@ public interface sym {
   public static final int COMMENT = 36;
   public static final int GEQUAL = 14;
   public static final int SI = 27;
-  public static final int EXPONENTIAL = 39;
   public static final int FUNCION = 33;
   public static final int LPAREN = 7;
   public static final int SEMI = 2;
   public static final int ENTONCES = 28;
   public static final int ASSIGNSYMBOL = 26;
   public static final int MINUS = 4;
-  public static final int CHARACTER = 42;
+  public static final int CHARACTER = 40;
   public static final int RPAREN = 8;
   public static final int NOT = 11;
   public static final int AND = 9;
@@ -30,11 +29,11 @@ public interface sym {
   public static final int MIENTRAS = 31;
   public static final int COMMA = 25;
   public static final int PLUS = 3;
-  public static final int ID = 41;
+  public static final int ID = 39;
   public static final int DOT = 24;
   public static final int EOF = 0;
   public static final int RETURN = 34;
-  public static final int BOOLEANVALUE = 43;
+  public static final int BOOLEANVALUE = 41;
   public static final int error = 1;
   public static final int BOOLEANTYPE = 19;
   public static final int DOUBLENUMBER = 37;
@@ -45,7 +44,6 @@ public interface sym {
   public static final int GTHAN = 16;
   public static final int LBRACE = 22;
   public static final int LEQUAL = 13;
-  public static final int LOGARITHM = 40;
   public static final int INTTYPE = 17;
   public static final int RBRACE = 23;
   public static final int HEXNUMBER = 38;
@@ -92,8 +90,6 @@ public interface sym {
   "COMMENT",
   "DOUBLENUMBER",
   "HEXNUMBER",
-  "EXPONENTIAL",
-  "LOGARITHM",
   "ID",
   "CHARACTER",
   "BOOLEANVALUE"
