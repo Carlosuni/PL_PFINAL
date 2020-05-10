@@ -106,7 +106,7 @@ sent_decl ::= decl_variable			{:  :}
 			;
 			
 sent_uso ::= asignacion SEMI			{:  :}
-		   | expresion SEMI				{:  :}
+		   | expresion:e SEMI				{: System.out.println(e); :}
 			;			
 
 sent_flujo ::= condicional			{:  :}
