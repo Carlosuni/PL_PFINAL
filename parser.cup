@@ -20,7 +20,7 @@ import java.lang.Math;
 
 parser code {:
   protected Lexer lexer;
-  Hashtable<String, Double> varTable = new Hashtable<String, Double>();
+  Hashtable<String, Object> varTable = new Hashtable<String, Object>();
   Hashtable<String, List> structTable = new Hashtable<String, List>();
 :}
 
@@ -135,16 +135,51 @@ condicional ::= SI expresion_cond ENTONCES blq_sentencias FINSI	 {:  :}
 bucle ::= MIENTRAS expresion blq_sentencias FINMIENTRAS	 {:  :}
         ;	
 
-key_tipo ::= INTTYPE:e	 {: RESULT = e; :}
-		   | REALTYPE:e	 {: RESULT = e; :}
-		   | BOOLEANTYPE:e	 {: RESULT = e; :}
-		   | CHARTYPE:e	 {: RESULT = e; :}
+key_tipo ::= INTTYPE:e	 {: RESULT = String.valueOf(e); :}
+		   | REALTYPE:e	 {: RESULT = String.valueOf(e); :}
+		   | BOOLEANTYPE:e	 {: RESULT = String.valueOf(e); :}
+		   | CHARTYPE:e	 {: RESULT = String.valueOf(e); :}
 		   ;
 
 decl_variable ::= key_tipo:k ID:i ASSIGNSYMBOL expresion:e	 {: varTable.put(i , e);
 																	System.out.println(k + " " + i + " := " + e + ";"); :}
-		   		| key_tipo:k ID:i	 {: varTable.put(i , new Double(0.0));
-											System.out.println(k + " " + i + ";"); :}
+		   		| key_tipo:k ID:i	 {: 		switch (String.valueOf(k)) {
+													case "ENTERO": {
+														varTable.put(i , new Double(0.0));
+														break;}
+													case "REAL": {
+														varTable.put(i , new Double(0.0));
+														break;}
+													case "BOOLEANO": {
+														varTable.put(i , new Boolean(false));
+														break;}
+													case "CARACTER": {
+														varTable.put(i , Character.valueOf('a'));
+														break;}		
+													default: {
+														System.out.println("Error: Invalid type " + k + " for variable " + i); }
+										 				  //parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, e));
+												}
+											System.out.println(k + " " + i + ";"); 
+											RESULT = String.valueOf(k); 								:}
+		   		| decl_variable:k COMMA ID:i	 {: switch (String.valueOf(k)) {
+													case "ENTERO": {
+														varTable.put(i , new Double(0.0));
+														break;}
+													case "REAL": {
+														varTable.put(i , new Double(0.0));
+														break;}
+													case "BOOLEANO": {
+														varTable.put(i , new Boolean(false));
+														break;}
+													case "CARACTER": {
+														varTable.put(i , Character.valueOf('a'));
+														break;}		
+													default: {
+														System.out.println("Error: Invalid type " + k + " for variable " + i); }
+										 				  //parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, e));
+												}
+											System.out.println(k + " " + i + ";"); :}											
 		   		| ID:i1 ID:i2 		 {: varTable.put(i2 , new Double(0.0));
 											System.out.println(i1 + " " + i2 + ";"); :}
 				;		   
