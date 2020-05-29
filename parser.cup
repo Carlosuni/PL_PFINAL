@@ -16,12 +16,16 @@ import java.util.List;
 
 /* Custom Imports */
 import java.lang.Math; 
-
+import java.util.*;
 
 parser code {:
   protected Lexer lexer;
   Hashtable<String, Object> varTable = new Hashtable<String, Object>();
-  Hashtable<String, List> structTable = new Hashtable<String, List>();
+  //Hashtable<String, List> structTable = new Hashtable<String, List>();
+  Hashtable<String, Hashtable<String, Object>> structTable = new Hashtable<String, Hashtable<String, Object>>();
+
+  //ArrayList<ArrayList<String>> array = new ArrayList<ArrayList<String>>();
+
 :}
 
 
@@ -160,35 +164,39 @@ decl_variable ::= key_tipo:k ID:i ASSIGNSYMBOL expresion:e	 {: varTable.put(i , 
 														System.out.println("Error: Invalid type " + k + " for variable " + i); }
 										 				  //parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, e));
 												}
-											System.out.println(k + " " + i + ";"); 
-											RESULT = String.valueOf(k); 								:}
-		   		| decl_variable:k COMMA ID:i	 {: switch (String.valueOf(k)) {
-													case "ENTERO": {
-														varTable.put(i , new Double(0.0));
-														break;}
-													case "REAL": {
-														varTable.put(i , new Double(0.0));
-														break;}
-													case "BOOLEANO": {
-														varTable.put(i , new Boolean(false));
-														break;}
-													case "CARACTER": {
-														varTable.put(i , Character.valueOf('a'));
-														break;}		
-													default: {
-														System.out.println("Error: Invalid type " + k + " for variable " + i); }
-										 				  //parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, e));
-												}
-											System.out.println(k + " " + i + ";"); :}											
-		   		| ID:i1 ID:i2 		 {: varTable.put(i2 , new Double(0.0));
+											System.out.println(k + " " + i + ";");
+											AbstractMap.SimpleEntry<String, String> result_tuple = new AbstractMap.SimpleEntry<String, String>(String.valueOf(i), String.valueOf(k)); 
+											RESULT = result_tuple; 								:}
+		   		| decl_variable:m COMMA ID:i	 {: AbstractMap.SimpleEntry<String, String> castedMap = (AbstractMap.SimpleEntry<String, String>) m;
+													switch (castedMap.getValue()) {
+														case "ENTERO": {
+															varTable.put(castedMap.getKey() , new Double(0.0));
+															break;}
+														case "REAL": {
+															varTable.put(castedMap.getKey() , new Double(0.0));
+															break;}
+														case "BOOLEANO": {
+															varTable.put(castedMap.getKey() , new Boolean(false));
+															break;}
+														case "CARACTER": {
+															varTable.put(castedMap.getKey() , Character.valueOf('a'));
+															break;}		
+														default: {
+															System.out.println("Creating struct object of type " + castedMap.getValue() + " with variable name " + castedMap.getKey()); }
+										 					  //parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, e));
+													}
+											System.out.println(castedMap.getValue() + " " + castedMap.getKey() + ";"); :}											
+		   		| ID:i1 ID:i2 		 {: varTable.put(i2 , (new Object()));
 											System.out.println(i1 + " " + i2 + ";"); :}
 				;		   
 
-decl_struct ::= STRUCTTYPE ID LBRACE lista_decl RBRACE	 {:  :}
+decl_struct ::= STRUCTTYPE ID:i LBRACE lista_decl RBRACE	 {:  :}
 				;	
 						   
-lista_decl ::= lista_decl SEMI decl_variable	 {:  :}
-		   	 | decl_variable	 {:  :}
+lista_decl ::= lista_decl:l SEMI decl_variable:m	 {: AbstractMap.SimpleEntry<String, String> castedMap = (AbstractMap.SimpleEntry<String, String>) m;
+														RESULT= castedMap; :}
+		   	 | decl_variable:m	 {: AbstractMap.SimpleEntry<String, String> castedMap = (AbstractMap.SimpleEntry<String, String>) m;
+									RESULT= castedMap; :}
 			 ;
 
 asignacion ::= ID:i ASSIGNSYMBOL expresion:e SEMI	 {: if (varTable.get(i) != null) {

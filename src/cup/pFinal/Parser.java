@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.util.Hashtable;
 import java.util.List;
 import java.lang.Math;
+import java.util.*;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import java_cup.runtime.XMLElement;
 
@@ -477,7 +478,11 @@ public class Parser extends java_cup.runtime.lr_parser {
 
   protected Lexer lexer;
   Hashtable<String, Object> varTable = new Hashtable<String, Object>();
-  Hashtable<String, List> structTable = new Hashtable<String, List>();
+  //Hashtable<String, List> structTable = new Hashtable<String, List>();
+  Hashtable<String, Hashtable<String, Object>> structTable = new Hashtable<String, Hashtable<String, Object>>();
+
+  //ArrayList<ArrayList<String>> array = new ArrayList<ArrayList<String>>();
+
 
 
 /** Cup generated class to encapsulate user supplied action code.*/
@@ -891,8 +896,9 @@ class CUP$Parser$actions {
 														System.out.println("Error: Invalid type " + k + " for variable " + i); }
 										 				  //parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, e));
 												}
-											System.out.println(k + " " + i + ";"); 
-											RESULT = String.valueOf(k); 								
+											System.out.println(k + " " + i + ";");
+											AbstractMap.SimpleEntry<String, String> result_tuple = new AbstractMap.SimpleEntry<String, String>(String.valueOf(i), String.valueOf(k)); 
+											RESULT = result_tuple; 								
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("decl_variable",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -901,31 +907,32 @@ class CUP$Parser$actions {
           case 32: // decl_variable ::= decl_variable COMMA ID 
             {
               Object RESULT =null;
-		Location kxleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).xleft;
-		Location kxright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).xright;
-		Object k = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
+		Location mxleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).xleft;
+		Location mxright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).xright;
+		Object m = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		Location ixleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xleft;
 		Location ixright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xright;
 		String i = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		//@@CUPDBG34
- switch (String.valueOf(k)) {
-													case "ENTERO": {
-														varTable.put(i , new Double(0.0));
-														break;}
-													case "REAL": {
-														varTable.put(i , new Double(0.0));
-														break;}
-													case "BOOLEANO": {
-														varTable.put(i , new Boolean(false));
-														break;}
-													case "CARACTER": {
-														varTable.put(i , Character.valueOf('a'));
-														break;}		
-													default: {
-														System.out.println("Error: Invalid type " + k + " for variable " + i); }
-										 				  //parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, e));
-												}
-											System.out.println(k + " " + i + ";"); 
+ AbstractMap.SimpleEntry<String, String> castedMap = (AbstractMap.SimpleEntry<String, String>) m;
+													switch (castedMap.getValue()) {
+														case "ENTERO": {
+															varTable.put(castedMap.getKey() , new Double(0.0));
+															break;}
+														case "REAL": {
+															varTable.put(castedMap.getKey() , new Double(0.0));
+															break;}
+														case "BOOLEANO": {
+															varTable.put(castedMap.getKey() , new Boolean(false));
+															break;}
+														case "CARACTER": {
+															varTable.put(castedMap.getKey() , Character.valueOf('a'));
+															break;}		
+														default: {
+															System.out.println("Creating struct object of type " + castedMap.getValue() + " with variable name " + castedMap.getKey()); }
+										 					  //parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, e));
+													}
+											System.out.println(castedMap.getValue() + " " + castedMap.getKey() + ";"); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("decl_variable",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -941,7 +948,7 @@ class CUP$Parser$actions {
 		Location i2xright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xright;
 		String i2 = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		//@@CUPDBG35
- varTable.put(i2 , new Double(0.0));
+ varTable.put(i2 , (new Object()));
 											System.out.println(i1 + " " + i2 + ";"); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("decl_variable",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -951,6 +958,9 @@ class CUP$Parser$actions {
           case 34: // decl_struct ::= STRUCTTYPE ID LBRACE lista_decl RBRACE 
             {
               Object RESULT =null;
+		Location ixleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).xleft;
+		Location ixright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).xright;
+		String i = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		//@@CUPDBG36
   
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("decl_struct",13, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -961,8 +971,15 @@ class CUP$Parser$actions {
           case 35: // lista_decl ::= lista_decl SEMI decl_variable 
             {
               Object RESULT =null;
+		Location lxleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).xleft;
+		Location lxright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).xright;
+		Object l = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
+		Location mxleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xleft;
+		Location mxright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xright;
+		Object m = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		//@@CUPDBG37
-  
+ AbstractMap.SimpleEntry<String, String> castedMap = (AbstractMap.SimpleEntry<String, String>) m;
+														RESULT= castedMap; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("lista_decl",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -971,8 +988,12 @@ class CUP$Parser$actions {
           case 36: // lista_decl ::= decl_variable 
             {
               Object RESULT =null;
+		Location mxleft = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xleft;
+		Location mxright = ((java_cup.runtime.ComplexSymbolFactory.ComplexSymbol)CUP$Parser$stack.peek()).xright;
+		Object m = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		//@@CUPDBG38
-  
+ AbstractMap.SimpleEntry<String, String> castedMap = (AbstractMap.SimpleEntry<String, String>) m;
+									RESULT= castedMap; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("lista_decl",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
