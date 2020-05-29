@@ -57,7 +57,7 @@ terminal String    	COMMENT;
 terminal Double    	DOUBLENUMBER;
 terminal Integer    HEXNUMBER;
 terminal String		ID;
-terminal String		CHARACTER;
+terminal Character	CHARACTER;
 terminal Boolean	BOOLEANVALUE;
 
 /* Non terminals */
@@ -136,7 +136,7 @@ condicional ::= SI expresion_cond ENTONCES blq_sentencias FINSI	 {:  :}
               | SI expresion_cond ENTONCES blq_sentencias SINO blq_sentencias FINSI 	 {:  :}
               ;	
 
-bucle ::= MIENTRAS expresion blq_sentencias FINMIENTRAS	 {:  :}
+bucle ::= MIENTRAS expresion_cond blq_sentencias FINMIENTRAS	 {:  :}
         ;	
 
 key_tipo ::= INTTYPE:e	 {: RESULT = String.valueOf(e); :}
@@ -190,13 +190,23 @@ decl_variable ::= key_tipo:k ID:i ASSIGNSYMBOL expresion:e	 {: varTable.put(i , 
 											System.out.println(i1 + " " + i2 + ";"); :}
 				;		   
 
-decl_struct ::= STRUCTTYPE ID:i LBRACE lista_decl RBRACE	 {:  :}
-				;	
+decl_struct ::= STRUCTTYPE ID:id LBRACE lista_decl:l RBRACE	 {: ArrayList<AbstractMap.SimpleEntry<String, String>> mapList = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
+																Hashtable<String, Object> structAttributes = new Hashtable<String, Object>();
+																for (int i = 0; i < mapList.size(); ++i) {
+																	structAttributes.put(mapList.get(i).getKey(), new Object());
+																}	 
+																structTable.put(id , structAttributes);
+															 :}
+			  ;	
 						   
 lista_decl ::= lista_decl:l SEMI decl_variable:m	 {: AbstractMap.SimpleEntry<String, String> castedMap = (AbstractMap.SimpleEntry<String, String>) m;
-														RESULT= castedMap; :}
+														ArrayList<AbstractMap.SimpleEntry<String, String>> mapList = (ArrayList<AbstractMap.SimpleEntry<String, String>>) l;
+														mapList.add(castedMap);
+														RESULT= mapList; :}
 		   	 | decl_variable:m	 {: AbstractMap.SimpleEntry<String, String> castedMap = (AbstractMap.SimpleEntry<String, String>) m;
-									RESULT= castedMap; :}
+									ArrayList<AbstractMap.SimpleEntry<String, String>> mapList = new ArrayList<AbstractMap.SimpleEntry<String, String>>();
+									mapList.add(castedMap);
+									RESULT= mapList; :}
 			 ;
 
 asignacion ::= ID:i ASSIGNSYMBOL expresion:e SEMI	 {: if (varTable.get(i) != null) {
@@ -205,9 +215,38 @@ asignacion ::= ID:i ASSIGNSYMBOL expresion:e SEMI	 {: if (varTable.get(i) != nul
 														} else {
 														  parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, e));
                                                         } :}
-		   	 | ID DOT ID ASSIGNSYMBOL expresion SEMI	 {:  :}
-		   	 | ID ASSIGNSYMBOL CHARACTER SEMI	 {:  :}
-		   	 | ID DOT ID ASSIGNSYMBOL CHARACTER SEMI	 {:  :}
+		   	 | ID:is DOT ID:ia ASSIGNSYMBOL expresion:e SEMI	 {: 	
+																		Hashtable<String, Object> attributeTable = structTable.get(is);
+																		if (attributeTable != null) {
+																			if (attributeTable.get(ia) != null) {
+																				attributeTable.put(ia, e);
+					   														    System.out.println(is + "." + ia + " := " + e + ";");
+																			} else {
+																				parser.report_error("Error: Undeclared Attribute Identifier " + ia + " in structure " + is, new Symbol(sym.ID, e));																			
+																			}
+																		} else {
+																			parser.report_error("Error: Undeclared Identifier " + is, new Symbol(sym.ID, e));									
+																		}	
+																 :}
+		   	 | ID:i ASSIGNSYMBOL CHARACTER:c SEMI	 {: if (varTable.get(i) != null) {
+														  varTable.put(i , Character.valueOf(c));
+														  System.out.println(i + " := '" + Character.valueOf(c) + "';");
+														} else {
+														  parser.report_error("Error: Undeclared Identifier " + i, new Symbol(sym.ID, Character.valueOf(c)));
+                                                        } :}
+		   	 | ID:is DOT ID:ia ASSIGNSYMBOL CHARACTER:c SEMI	 {: 	
+																		Hashtable<String, Object> attributeTable = structTable.get(is);
+																		if (attributeTable != null) {
+																			if (attributeTable.get(ia) != null) {
+																				attributeTable.put(ia, Character.valueOf(c));
+					   														    System.out.println(is + "." + ia + " := " + Character.valueOf(c) + ";");
+																			} else {
+																				parser.report_error("Error: Undeclared Attribute Identifier " + ia + " in structure " + is, new Symbol(sym.ID, Character.valueOf(c)));																			
+																			}
+																		} else {
+																			parser.report_error("Error: Undeclared Identifier " + is, new Symbol(sym.ID, Character.valueOf(c)));									
+																		}	
+																 :}
 			 ;		
 
 def_funcion ::= FUNCION ID LPAREN lista_args RPAREN RETURN key_tipo LBRACE blq_sentencias RBRACE {:  :}
@@ -250,6 +289,7 @@ operando_cond ::= BOOLEANVALUE:e	               		 {: RESULT = e; 				:}
     	    	  
 term_cond ::= term_cond:e1 AND operando_cond:e2         	{:     RESULT = e1 && e2;   						:}
     	    | term_cond:e1 OR operando_cond:e2        		{:    RESULT = e1 || e2;		:}         
+    	    | operando_cond:e        		{:    RESULT = e;		:}         
 			; 
 			
 expresion_cond ::= term_cond:e					    		{: RESULT = e;        								:}	

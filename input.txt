@@ -25,6 +25,15 @@ REAL re;
 re := 5.0;
 2 + re;
 re_not_exist := 5.0;
+CARACTER re_char;
+re_char := 'c';
 STRUCT VECTOR2D {REAL x1; REAL x2};
-REAL re1, re2;
-
+VECTOR2D.x3 := 3;
+REAL re4;
+re4 := 0.0;
+MIENTRAS re4 < 1
+re4 := re4 + 1;
+FINMIENTRAS
+SI re4 < 2 ENTONCES
+re4 := re4 + 1;
+FINSI

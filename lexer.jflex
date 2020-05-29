@@ -162,7 +162,7 @@ Return = ( "R" | "r" ) ( "E" | "e" ) ( "T" | "t" ) ( "U" | "u" ) ( "R" | "r" ) (
   {Funcion}         	{ return symbolFactory.newSymbol("FUNCION", FUNCION); }
   {Return}          	{ return symbolFactory.newSymbol("RETURN", RETURN); }
   {BooleanValue}    	{ return symbolFactory.newSymbol("BOOLEANVALUE", BOOLEANVALUE, Boolean.parseBoolean(yytext())); }  
-  {Character}      		{ return symbolFactory.newSymbol("CHARACTER", CHARACTER, yytext()); }
+  {Character}      		{ return symbolFactory.newSymbol("CHARACTER", CHARACTER, Character.valueOf(yytext().charAt(1))); }
   {Id}    				{ return symbolFactory.newSymbol("ID", ID, yytext()); }
 }
 
